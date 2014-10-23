@@ -1,13 +1,12 @@
 from tkinter import *
 # import colorsys colorspace conversion
 
-
 # PARAMETERS
-ITERATIONS = 10
+ITERATIONS = 50
 WIDTH, HEIGHT = 600, 600
 # Mandel zoom 03
 CENTER = (-.5, 0)
-DIAMETER = 2.5
+DIAMETER = 3.0
 
 def mandel(c):
     z = 0
@@ -22,14 +21,16 @@ root = Tk()
 
 
 def color(i):
-    colors = ("#DDDDDD", "#AAAAAA", "#666666", "#000000")
+    colors = ("#EEEEEE", "#CCCCCC", "#AAAAAA", "#999999", "#777777", 
+              "#555555", "#000000")
     if i == ITERATIONS:
         return colors[-1]
     else:
-        choice = (i) % len(colors)
-    return colors[choice] 
+        return colors[(i//2) % len(colors)]
+
 
 def draw(image):
+    """Puts all pixels, from top to bottom."""
     full = ""
     
     D_HEIGHT = DIAMETER / HEIGHT
@@ -37,13 +38,11 @@ def draw(image):
     
     real = CENTER[0] - DIAMETER/2
     imag = CENTER[1] + DIAMETER/2
-    
-     
-    print(real, imag)
+    real_copy = real
+    #print(real, imag)
     
     for y in range(HEIGHT):
         horizontal_line = []
-        
         
         for x in range(WIDTH):         
             i = mandel(complex(real, imag))
@@ -52,14 +51,13 @@ def draw(image):
             real += D_WIDTH
 
         imag -= D_HEIGHT
-        real = CENTER[0] - DIAMETER//2
+        real = real_copy
          
-        horizontal_line = '{' + " ".join(horizontal_line) + '}'
-        full += horizontal_line + ' '
+        line_str = '{' + " ".join(horizontal_line) + '}'
+        full += line_str + ' '
         
     image.put(full)
         
-    print(real, imag)
         
 photo = PhotoImage(width=WIDTH, height=HEIGHT)
 draw(photo)
@@ -67,5 +65,4 @@ draw(photo)
 label = Label(root, image=photo)
 label.grid()
 root.mainloop()
-
 
