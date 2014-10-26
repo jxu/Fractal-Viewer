@@ -1,12 +1,20 @@
 from tkinter import *
 # import colorsys colorspace conversion
 
-# PARAMETERS
-ITERATIONS = 50
-WIDTH, HEIGHT = 600, 600
-# Mandel zoom 03
-CENTER = (-.5, 0)
-DIAMETER = 3.0
+# Parameters 
+ITERATIONS = 40
+WIDTH, HEIGHT = 600, 600 # Mandel zoom 03
+CENTER = (-.5, 0.9)
+DIAMETER = 1.0
+
+PALATE = "GRAY1"
+COLOR_SMOOTHING = False
+
+
+# Color palates 
+GRAY1   = ("#EEEEEE", "#CCCCCC", "#AAAAAA", "#999999", "#777777", 
+           "#555555", "#000000")
+BW      = ("#FFFFFF", "#000000")
 
 def mandel(c):
     z = 0
@@ -16,21 +24,15 @@ def mandel(c):
             return i     
     return ITERATIONS
 
-print("Starting...")
-root = Tk()
 
 
-def color(i):
-    colors = ("#EEEEEE", "#CCCCCC", "#AAAAAA", "#999999", "#777777", 
-              "#555555", "#000000")
-    if i == ITERATIONS:
-        return colors[-1]
-    else:
-        return colors[(i//2) % len(colors)]
+def color(i, colors):
+    return colors[round(i/ITERATIONS * (len(colors)-1))]
 
 
 def draw(image):
     """Puts all pixels, from top to bottom."""
+    print("Starting...")
     full = ""
     
     D_HEIGHT = DIAMETER / HEIGHT
@@ -41,12 +43,14 @@ def draw(image):
     real_copy = real
     #print(real, imag)
     
+    colors = eval(PALATE) # Pre-load color table
+    
     for y in range(HEIGHT):
         horizontal_line = []
         
         for x in range(WIDTH):         
             i = mandel(complex(real, imag))
-            horizontal_line.append(color(i))
+            horizontal_line.append(color(i, colors))
             
             real += D_WIDTH
 
@@ -54,15 +58,18 @@ def draw(image):
         real = real_copy
          
         line_str = '{' + " ".join(horizontal_line) + '}'
+        image.put(line_str)
         full += line_str + ' '
         
     image.put(full)
-        
-        
-photo = PhotoImage(width=WIDTH, height=HEIGHT)
-draw(photo)
-
-label = Label(root, image=photo)
-label.grid()
-root.mainloop()
-
+    
+def main():   
+    root = Tk()
+    photo = PhotoImage(width=WIDTH, height=HEIGHT)
+    draw(photo)
+    
+    label = Label(root, image=photo)
+    label.grid()
+    root.mainloop()
+    
+main()
